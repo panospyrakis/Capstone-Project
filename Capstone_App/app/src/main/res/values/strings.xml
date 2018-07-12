@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Capstone App</string>
+    <string name="title_activity_maps">Choose Location</string>
+</resources>
