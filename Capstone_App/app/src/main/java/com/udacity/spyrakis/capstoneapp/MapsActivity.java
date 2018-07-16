@@ -4,7 +4,8 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -18,33 +19,41 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
-    private LatLng chosenLocation;
+    private String chosenLocation;
+
+    private Geocoder geocoder;
+
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle(getApplicationContext().getString(R.string.where));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
-    @Override
-    public void onBackPressed() {
-        returnResult();
-    }
-
     private void returnResult() {
         Intent data = new Intent();
-
         data.putExtra(MenuActivity.EXTRA_LOCATION, chosenLocation);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        returnResult();
     }
 
     /**
@@ -60,24 +69,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
+        // Currently you can search for places from 8 locations: Amsterdam, Barcelona, Berlin, Dubai, London, Paris, Rome and Tuscany.
+        // A Places search returns a list of Places along with summary information about each Place.
+        LatLng london = new LatLng(51.507330, -0.127788);
 
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        geocoder = new Geocoder(this, Locale.getDefault());
 
         List<Address> addresses = null; // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
         String city = "";
         try {
-            addresses = geocoder.getFromLocation(sydney.latitude, sydney.longitude, 1);
+            addresses = geocoder.getFromLocation(london.latitude, london.longitude, 1);
             city = addresses.get(0).getLocality();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        chosenLocation = sydney;
+        chosenLocation = city;
         mMap.addMarker(new MarkerOptions()
-                .position(sydney)
+                .position(london)
                 .title(city)
                 .draggable(true));
 
@@ -96,14 +106,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                chosenLocation = marker.getPosition();
-                Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
                 List<Address> addresses; // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
                 String city = "";
+
                 try {
-                    addresses = geocoder.getFromLocation(chosenLocation.latitude, chosenLocation.longitude, 1);
+                    addresses = geocoder.getFromLocation(marker.getPosition().latitude, marker.getPosition().longitude, 1);
                     if (addresses.size() <= 0) {
                         return;
                     }
@@ -114,9 +123,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     e.printStackTrace();
                 }
                 marker.setTitle(city);
+                chosenLocation = city;
             }
         });
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(london));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            returnResult();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+
     }
 }

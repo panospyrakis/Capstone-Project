@@ -3,4 +3,9 @@
     <string name="title_activity_maps">Choose Location</string>
     <string name="search_for">Search For: </string>
     <string name="where">Where?</string>
+    <string name="search_button_text">Search</string>
+    <string name="connection_fail">Internet Connection Failure</string>
+    <string name="base_url">http://tour-pedia.org/</string>
+    <string name="radius">1500</string>
+
 </resources>
