@@ -1,4 +1,4 @@
-package com.udacity.spyrakis.capstoneapp;
+package com.udacity.spyrakis.capstoneapp.activities;
 
 import android.content.Intent;
 import android.location.Address;
@@ -14,6 +14,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.udacity.spyrakis.capstoneapp.R;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,8 +24,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
 
-    private String chosenLocation;
-
+    private LatLng chosenLocation;
+    private String chosenCity = "";
     private Geocoder geocoder;
 
     Toolbar toolbar;
@@ -85,7 +86,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             e.printStackTrace();
         }
 
-        chosenLocation = city;
+        chosenLocation = london;
         mMap.addMarker(new MarkerOptions()
                 .position(london)
                 .title(city)
@@ -109,7 +110,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
 
                 List<Address> addresses; // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
-                String city = "";
+                chosenCity = "";
 
                 try {
                     addresses = geocoder.getFromLocation(marker.getPosition().latitude, marker.getPosition().longitude, 1);
@@ -117,13 +118,13 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
                         return;
                     }
                     if (addresses.get(0).getLocality() != null) {
-                        city = addresses.get(0).getLocality();
+                        chosenCity = addresses.get(0).getLocality();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                marker.setTitle(city);
-                chosenLocation = city;
+                marker.setTitle(chosenCity);
+                chosenLocation = marker.getPosition();
             }
         });
 

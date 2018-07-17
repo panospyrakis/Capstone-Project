@@ -1,6 +1,9 @@
-package com.udacity.spyrakis.capstoneapp;
+package com.udacity.spyrakis.capstoneapp.activities;
 
 import android.support.v7.app.AppCompatActivity;
+
+import com.udacity.spyrakis.capstoneapp.R;
+import com.udacity.spyrakis.capstoneapp.engine.ServiceInterface;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;

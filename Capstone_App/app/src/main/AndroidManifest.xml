@@ -29,15 +29,17 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".MapsActivity"
-            android:parentActivityName=".MenuActivity"/>
-        <activity android:name=".MenuActivity">
+        <activity
+            android:name=".activities.MapsActivity"
+            android:parentActivityName=".activities.MenuActivity" />
+        <activity android:name=".activities.MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.ResultListActivity"></activity>
     </application>
 
 </manifest>

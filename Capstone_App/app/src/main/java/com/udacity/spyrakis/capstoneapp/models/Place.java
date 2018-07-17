@@ -1,4 +1,4 @@
-package com.udacity.spyrakis.capstoneapp;
+package com.udacity.spyrakis.capstoneapp.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
