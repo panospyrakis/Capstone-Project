@@ -1,5 +1,6 @@
 package com.udacity.spyrakis.capstoneapp.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -24,15 +25,16 @@ import retrofit2.Response;
 
 public class MenuActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
 
-    static final int PLACE_PICKER_REQUEST = 1;
     static final int MAPS_REQUEST_CODE = 2;
 
     static final String EXTRA_LOCATION = "EXTRA_LOCATION";
+    static final String EXTRA_RESULT_LIST = "EXTRA_RESULT_LIST";
 
     Button whereButton;
     Button searchButton;
     private LatLng searchLocation;
     private String category;
+    ProgressDialog progress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,14 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
         setUpWhereButton();
         setUpSpinner();
         setUpSearchButton();
+    }
+
+    @Override
+    public void onStart() {
+        if (progress != null && progress.isShowing()) {
+            progress.dismiss();
+        }
+        super.onStart();
     }
 
     private void setUpWhereButton() {
@@ -54,7 +64,6 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
         whereButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                whereButton.setEnabled(false);
                 Intent startMapsActivity = new Intent(getActivity(), MapsActivity.class);
                 getActivity().startActivityForResult(startMapsActivity, 1);
             }
@@ -67,13 +76,18 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                whereButton.setEnabled(false);
                 findPlaces();
             }
         });
     }
 
     private void findPlaces() {
+
+        progress = new ProgressDialog(this);
+        progress.setTitle(getApplicationContext().getString(R.string.loading));
+        progress.setMessage(getApplicationContext().getString(R.string.wait));
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
 
         LatLngBounds bounds = toBounds(150.0);
 
@@ -82,19 +96,22 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
                 bounds.northeast.latitude,
                 bounds.southwest.longitude,
                 bounds.northeast.longitude,
-                category);
+                category.toLowerCase());
 
         call.enqueue(new Callback<ArrayList<Place>>() {
             @Override
             public void onResponse(Call<ArrayList<Place>> call, Response<ArrayList<Place>> response) {
-                Toast.makeText(getApplicationContext(), response.message(), Toast.LENGTH_SHORT).show();
+                progress.dismiss();
                 ArrayList<Place> places = response.body();
-
+                Intent resultsIntent = new Intent(getActivity(), ResultListActivity.class);
+                resultsIntent.putParcelableArrayListExtra(EXTRA_RESULT_LIST, places);
+                getActivity().startActivity(resultsIntent);
             }
 
             @Override
             public void onFailure(Call<ArrayList<Place>> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                progress.dismiss();
+                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.error), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -110,24 +127,14 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (data != null) return;
+        if (data == null) return;
 
         if (requestCode == MAPS_REQUEST_CODE) {
-            whereButton.setEnabled(true);
             if (data.hasExtra(EXTRA_LOCATION)) {
                 searchLocation = data.getParcelableExtra(EXTRA_LOCATION);
                 Toast.makeText(getApplicationContext(), searchLocation.toString(), Toast.LENGTH_SHORT).show();
             }
         }
-
-        if (requestCode == PLACE_PICKER_REQUEST) {
-            whereButton.setEnabled(true);
-            if (resultCode == RESULT_OK) {
-                String toastMsg = String.format("Place: %s", data.toString());
-                Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
-            }
-        }
-
     }
 
     private void setUpSpinner() {

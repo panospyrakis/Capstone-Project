@@ -1,8 +1,11 @@
 package com.udacity.spyrakis.capstoneapp.models.placeDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Description {
+public class Description implements Parcelable {
 
     @SerializedName("de")
     private String de;
@@ -94,4 +97,45 @@ public class Description {
                         ",es = '" + es + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.de);
+        dest.writeString(this.en);
+        dest.writeString(this.unidentified);
+        dest.writeString(this.it);
+        dest.writeString(this.fr);
+        dest.writeString(this.nl);
+        dest.writeString(this.es);
+    }
+
+    public Description() {
+    }
+
+    protected Description(Parcel in) {
+        this.de = in.readString();
+        this.en = in.readString();
+        this.unidentified = in.readString();
+        this.it = in.readString();
+        this.fr = in.readString();
+        this.nl = in.readString();
+        this.es = in.readString();
+    }
+
+    public static final Parcelable.Creator<Description> CREATOR = new Parcelable.Creator<Description>() {
+        @Override
+        public Description createFromParcel(Parcel source) {
+            return new Description(source);
+        }
+
+        @Override
+        public Description[] newArray(int size) {
+            return new Description[size];
+        }
+    };
 }

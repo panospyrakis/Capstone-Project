@@ -1,10 +1,14 @@
 package com.udacity.spyrakis.capstoneapp.models.placeDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class HereNow {
+public class HereNow implements Parcelable {
 
     @SerializedName("summary")
     private String summary;
@@ -48,4 +52,38 @@ public class HereNow {
                         ",groups = '" + groups + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.summary);
+        dest.writeInt(this.count);
+        dest.writeList(this.groups);
+    }
+
+    public HereNow() {
+    }
+
+    protected HereNow(Parcel in) {
+        this.summary = in.readString();
+        this.count = in.readInt();
+        this.groups = new ArrayList<Object>();
+        in.readList(this.groups, Object.class.getClassLoader());
+    }
+
+    public static final Parcelable.Creator<HereNow> CREATOR = new Parcelable.Creator<HereNow>() {
+        @Override
+        public HereNow createFromParcel(Parcel source) {
+            return new HereNow(source);
+        }
+
+        @Override
+        public HereNow[] newArray(int size) {
+            return new HereNow[size];
+        }
+    };
 }

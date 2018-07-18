@@ -1,64 +1,67 @@
 package com.udacity.spyrakis.capstoneapp.models.placeDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class PlaceDetails {
+public class PlaceDetails implements Parcelable {
 
     @SerializedName("website")
-    private String website;
+    private transient String website;
 
     @SerializedName("address")
     private String address;
 
     @SerializedName("lng")
-    private double lng;
+    private transient double lng;
 
     @SerializedName("icon")
     private String icon;
 
     @SerializedName("numReviews")
-    private int numReviews;
+    private transient int numReviews;
 
     @SerializedName("description")
     private Description description;
 
     @SerializedName("services")
-    private Services services;
+    private transient Services services;
 
     @SerializedName("reviews")
-    private List<String> reviews;
+    private transient List<String> reviews;
 
     @SerializedName("name")
-    private String name;
+    private  String name;
 
     @SerializedName("location")
-    private String location;
+    private transient String location;
 
     @SerializedName("phone_number")
-    private String phoneNumber;
+    private transient String phoneNumber;
 
     @SerializedName("id")
     private int id;
 
     @SerializedName("category")
-    private String category;
+    private transient String category;
 
     @SerializedName("external_urls")
-    private ExternalUrls externalUrls;
+    private transient ExternalUrls externalUrls;
 
     @SerializedName("lat")
-    private double lat;
+    private transient double lat;
 
     @SerializedName("international_phone_number")
-    private String internationalPhoneNumber;
+    private transient String internationalPhoneNumber;
 
     @SerializedName("statistics")
-    private Statistics statistics;
+    private transient Statistics statistics;
 
     @SerializedName("polarity")
-    private int polarity;
+    private transient int polarity;
 
     public void setWebsite(String website) {
         this.website = website;
@@ -228,4 +231,67 @@ public class PlaceDetails {
                         ",polarity = '" + polarity + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.website);
+        dest.writeString(this.address);
+        dest.writeDouble(this.lng);
+        dest.writeString(this.icon);
+        dest.writeInt(this.numReviews);
+        dest.writeParcelable(this.description, flags);
+        dest.writeParcelable(this.services, flags);
+        dest.writeStringList(this.reviews);
+        dest.writeString(this.name);
+        dest.writeString(this.location);
+        dest.writeString(this.phoneNumber);
+        dest.writeInt(this.id);
+        dest.writeString(this.category);
+        dest.writeParcelable(this.externalUrls, flags);
+        dest.writeDouble(this.lat);
+        dest.writeString(this.internationalPhoneNumber);
+        dest.writeParcelable(this.statistics, flags);
+        dest.writeInt(this.polarity);
+    }
+
+    public PlaceDetails() {
+    }
+
+    protected PlaceDetails(Parcel in) {
+        this.website = in.readString();
+        this.address = in.readString();
+        this.lng = in.readDouble();
+        this.icon = in.readString();
+        this.numReviews = in.readInt();
+        this.description = in.readParcelable(Description.class.getClassLoader());
+        this.services = in.readParcelable(Services.class.getClassLoader());
+        this.reviews = in.createStringArrayList();
+        this.name = in.readString();
+        this.location = in.readString();
+        this.phoneNumber = in.readString();
+        this.id = in.readInt();
+        this.category = in.readString();
+        this.externalUrls = in.readParcelable(ExternalUrls.class.getClassLoader());
+        this.lat = in.readDouble();
+        this.internationalPhoneNumber = in.readString();
+        this.statistics = in.readParcelable(Statistics.class.getClassLoader());
+        this.polarity = in.readInt();
+    }
+
+    public static final Parcelable.Creator<PlaceDetails> CREATOR = new Parcelable.Creator<PlaceDetails>() {
+        @Override
+        public PlaceDetails createFromParcel(Parcel source) {
+            return new PlaceDetails(source);
+        }
+
+        @Override
+        public PlaceDetails[] newArray(int size) {
+            return new PlaceDetails[size];
+        }
+    };
 }

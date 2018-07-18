@@ -1,8 +1,11 @@
 package com.udacity.spyrakis.capstoneapp.models.placeDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class ExternalUrls {
+public class ExternalUrls implements Parcelable {
 
     @SerializedName("GooglePlaces")
     private String googlePlaces;
@@ -58,4 +61,39 @@ public class ExternalUrls {
                         ",foursquare = '" + foursquare + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.googlePlaces);
+        dest.writeString(this.booking);
+        dest.writeString(this.facebook);
+        dest.writeString(this.foursquare);
+    }
+
+    public ExternalUrls() {
+    }
+
+    protected ExternalUrls(Parcel in) {
+        this.googlePlaces = in.readString();
+        this.booking = in.readString();
+        this.facebook = in.readString();
+        this.foursquare = in.readString();
+    }
+
+    public static final Parcelable.Creator<ExternalUrls> CREATOR = new Parcelable.Creator<ExternalUrls>() {
+        @Override
+        public ExternalUrls createFromParcel(Parcel source) {
+            return new ExternalUrls(source);
+        }
+
+        @Override
+        public ExternalUrls[] newArray(int size) {
+            return new ExternalUrls[size];
+        }
+    };
 }

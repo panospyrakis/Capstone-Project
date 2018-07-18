@@ -31,7 +31,11 @@
 
         <activity
             android:name=".activities.MapsActivity"
-            android:parentActivityName=".activities.MenuActivity" />
+            android:parentActivityName=".activities.MenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="activities.MenuActivity" />
+        </activity>
         <activity android:name=".activities.MenuActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +43,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ResultListActivity"></activity>
+        <activity
+            android:name=".activities.ResultListActivity"
+            android:parentActivityName=".activities.MenuActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="activities.MenuActivity" />
+        </activity>
+        <activity
+            android:name=".activities.DetailsActivity"
+            android:parentActivityName=".activities.ResultListActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="activities.ResultListActivity" />
+        </activity>
     </application>
 
 </manifest>

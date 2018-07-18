@@ -1,85 +1,32 @@
 package com.udacity.spyrakis.capstoneapp.models.placeDetails;
 
-import com.google.gson.annotations.SerializedName;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-public class Services {
 
-    @SerializedName("de")
-    private Object de;
+public class Services implements Parcelable {
 
-    @SerializedName("en")
-    private Object en;
-
-    @SerializedName("it")
-    private Object it;
-
-    @SerializedName("fr")
-    private Object fr;
-
-    @SerializedName("nl")
-    private Object nl;
-
-    @SerializedName("es")
-    private Object es;
-
-    public void setDe(Object de) {
-        this.de = de;
+    protected Services(Parcel in) {
     }
 
-    public Object getDe() {
-        return de;
-    }
+    public static final Creator<Services> CREATOR = new Creator<Services>() {
+        @Override
+        public Services createFromParcel(Parcel in) {
+            return new Services(in);
+        }
 
-    public void setEn(Object en) {
-        this.en = en;
-    }
+        @Override
+        public Services[] newArray(int size) {
+            return new Services[size];
+        }
+    };
 
-    public Object getEn() {
-        return en;
-    }
-
-    public void setIt(Object it) {
-        this.it = it;
-    }
-
-    public Object getIt() {
-        return it;
-    }
-
-    public void setFr(Object fr) {
-        this.fr = fr;
-    }
-
-    public Object getFr() {
-        return fr;
-    }
-
-    public void setNl(Object nl) {
-        this.nl = nl;
-    }
-
-    public Object getNl() {
-        return nl;
-    }
-
-    public void setEs(Object es) {
-        this.es = es;
-    }
-
-    public Object getEs() {
-        return es;
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @Override
-    public String toString() {
-        return
-                "Services{" +
-                        "de = '" + de + '\'' +
-                        ",en = '" + en + '\'' +
-                        ",it = '" + it + '\'' +
-                        ",fr = '" + fr + '\'' +
-                        ",nl = '" + nl + '\'' +
-                        ",es = '" + es + '\'' +
-                        "}";
+    public void writeToParcel(Parcel parcel, int i) {
     }
 }

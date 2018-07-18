@@ -28,6 +28,8 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     private String chosenCity = "";
     private Geocoder geocoder;
 
+    private static final String EXTRA_LOCATION = "EXTRA_LOCATION";
+
     Toolbar toolbar;
 
     @Override
@@ -43,6 +45,25 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        if(chosenLocation == null){
+            // Currently you can search for places from 8 locations: Amsterdam, Barcelona, Berlin, Dubai, London, Paris, Rome and Tuscany.
+            // A Places search returns a list of Places along with summary information about each Place.
+            LatLng london = new LatLng(51.507330, -0.127788);
+            chosenLocation = london;
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        chosenLocation = savedInstanceState.getParcelable(EXTRA_LOCATION);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(EXTRA_LOCATION, chosenLocation);
     }
 
     private void returnResult() {
@@ -70,25 +91,20 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Currently you can search for places from 8 locations: Amsterdam, Barcelona, Berlin, Dubai, London, Paris, Rome and Tuscany.
-        // A Places search returns a list of Places along with summary information about each Place.
-        LatLng london = new LatLng(51.507330, -0.127788);
-
         geocoder = new Geocoder(this, Locale.getDefault());
 
         List<Address> addresses = null; // Here 1 represent max location result to returned, by documents it recommended 1 to 5
 
         String city = "";
         try {
-            addresses = geocoder.getFromLocation(london.latitude, london.longitude, 1);
+            addresses = geocoder.getFromLocation(chosenLocation.latitude, chosenLocation.longitude, 1);
             city = addresses.get(0).getLocality();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        chosenLocation = london;
         mMap.addMarker(new MarkerOptions()
-                .position(london)
+                .position(chosenLocation)
                 .title(city)
                 .draggable(true));
 
@@ -128,7 +144,7 @@ public class MapsActivity extends BaseActivity implements OnMapReadyCallback {
             }
         });
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(london));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(chosenLocation));
     }
 
     @Override

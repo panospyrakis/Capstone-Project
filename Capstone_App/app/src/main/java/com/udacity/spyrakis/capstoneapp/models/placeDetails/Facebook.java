@@ -1,8 +1,11 @@
 package com.udacity.spyrakis.capstoneapp.models.placeDetails;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class Facebook {
+public class Facebook implements Parcelable {
 
     @SerializedName("fan_count")
     private int fanCount;
@@ -58,4 +61,39 @@ public class Facebook {
                         ",were_here_count = '" + wereHereCount + '\'' +
                         "}";
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.fanCount);
+        dest.writeInt(this.talkingAboutCount);
+        dest.writeInt(this.checkins);
+        dest.writeInt(this.wereHereCount);
+    }
+
+    public Facebook() {
+    }
+
+    protected Facebook(Parcel in) {
+        this.fanCount = in.readInt();
+        this.talkingAboutCount = in.readInt();
+        this.checkins = in.readInt();
+        this.wereHereCount = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Facebook> CREATOR = new Parcelable.Creator<Facebook>() {
+        @Override
+        public Facebook createFromParcel(Parcel source) {
+            return new Facebook(source);
+        }
+
+        @Override
+        public Facebook[] newArray(int size) {
+            return new Facebook[size];
+        }
+    };
 }
