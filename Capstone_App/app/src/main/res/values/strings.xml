@@ -16,7 +16,7 @@
     <string name="error">Something went wrong…</string>
     <string name="no_details">Unluckily no description is available</string>
     <string name="geo_uri">geo:%f,%f?q=(%s)</string>
-
+    <string name="content_authority">com.udacity.spyrakis.capstoneapp.app</string>
     <string-array name="categories">
         <item>Accommodation</item>
         <item>Attraction</item>

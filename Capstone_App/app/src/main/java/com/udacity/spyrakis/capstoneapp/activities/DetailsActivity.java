@@ -1,6 +1,10 @@
 package com.udacity.spyrakis.capstoneapp.activities;
 
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,12 +19,14 @@ import com.squareup.picasso.Picasso;
 import com.udacity.spyrakis.capstoneapp.R;
 import com.udacity.spyrakis.capstoneapp.models.placeDetails.Description;
 import com.udacity.spyrakis.capstoneapp.models.placeDetails.PlaceDetails;
+import com.udacity.spyrakis.capstoneapp.provider.PlaceContract;
 
-public class DetailsActivity extends BaseActivity {
+public class DetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private PlaceDetails place;
     ImageView starOn;
     ImageView starOff;
+    private static final int CURSOR_LOADER_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +49,14 @@ public class DetailsActivity extends BaseActivity {
 
         ImageView image = findViewById(R.id.image);
         Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(image);
-
         setUpFavouritesButton();
         setUpFabButton();
+        checkIfFavourite();
+    }
+
+    private void checkIfFavourite() {
+//      i'm doing this just to use a loader
+        getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -67,7 +78,7 @@ public class DetailsActivity extends BaseActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String uri = getApplicationContext().getString(R.string.geo_uri,place.getLat(),place.getLng(),place.getName());
+                String uri = getApplicationContext().getString(R.string.geo_uri, place.getLat(), place.getLng(), place.getName());
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
                 getApplicationContext().startActivity(intent);
             }
@@ -91,9 +102,11 @@ public class DetailsActivity extends BaseActivity {
         if (starOff.getVisibility() == View.VISIBLE) {
             starOff.setVisibility(View.INVISIBLE);
             starOn.setVisibility(View.VISIBLE);
+            addItemInProvider();
         } else {
             starOff.setVisibility(View.VISIBLE);
             starOn.setVisibility(View.INVISIBLE);
+            removeItemFromProvider();
         }
     }
 
@@ -124,6 +137,25 @@ public class DetailsActivity extends BaseActivity {
         return getApplicationContext().getString(R.string.no_details);
     }
 
+    private void addItemInProvider() {
+
+        ContentValues itemToAdd = new ContentValues();
+        itemToAdd.put(PlaceContract.PlaceEntry.NAME, place.getName());
+        itemToAdd.put(PlaceContract.PlaceEntry.DESCRIPTION, getDescription());
+        itemToAdd.put(PlaceContract.PlaceEntry.LAT, place.getLat());
+        itemToAdd.put(PlaceContract.PlaceEntry.LONG, place.getLng());
+        itemToAdd.put(PlaceContract.PlaceEntry.ICON, place.getIcon());
+        getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, itemToAdd);
+
+//        RecipeAppWidgetProvider.sendRefreshBroadcast(getApplicationContext());
+    }
+
+    private void removeItemFromProvider() {
+        String where = PlaceContract.PlaceEntry.NAME + "=?";
+        String[] whereVal = {place.getName()};
+        getContentResolver().delete(PlaceContract.PlaceEntry.CONTENT_URI, where, whereVal);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -133,4 +165,24 @@ public class DetailsActivity extends BaseActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String query = PlaceContract.PlaceEntry.NAME + "=?";
+        String[] queryName = {place.getName()};
+        return new CursorLoader(getApplicationContext(), PlaceContract.PlaceEntry.CONTENT_URI, null, query, queryName, null);
+    }
+
+    @Override
+    public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
+        if (cursor.getCount() > 0) toggleStars();
+    }
+
+    @Override
+    public void onLoaderReset(android.content.Loader<Cursor> loader) {
+
+    }
+
+
 }
