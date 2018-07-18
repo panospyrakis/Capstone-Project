@@ -16,7 +16,7 @@ public class PlaceDetails implements Parcelable {
     private String address;
 
     @SerializedName("lng")
-    private transient double lng;
+    private double lng;
 
     @SerializedName("icon")
     private String icon;
@@ -52,7 +52,7 @@ public class PlaceDetails implements Parcelable {
     private transient ExternalUrls externalUrls;
 
     @SerializedName("lat")
-    private transient double lat;
+    private  double lat;
 
     @SerializedName("international_phone_number")
     private transient String internationalPhoneNumber;

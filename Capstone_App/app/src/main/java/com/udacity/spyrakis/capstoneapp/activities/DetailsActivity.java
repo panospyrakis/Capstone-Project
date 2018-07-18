@@ -1,6 +1,9 @@
 package com.udacity.spyrakis.capstoneapp.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,6 +45,7 @@ public class DetailsActivity extends BaseActivity {
         Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(image);
 
         setUpFavouritesButton();
+        setUpFabButton();
     }
 
     @Override
@@ -54,6 +58,20 @@ public class DetailsActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelable(ResultListActivity.EXTRA_ITEM_DETAILS, place);
+    }
+
+    private void setUpFabButton() {
+        FloatingActionButton fab = findViewById(R.id.directions_fab);
+
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String uri = getApplicationContext().getString(R.string.geo_uri,place.getLat(),place.getLng(),place.getName());
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+                getApplicationContext().startActivity(intent);
+            }
+        });
     }
 
     private void setUpFavouritesButton() {

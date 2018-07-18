@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.udacity.spyrakis.capstoneapp.R;
@@ -38,12 +39,13 @@ public class ResultListActivity extends BaseActivity implements OnListItemClickL
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if (places == null && placesDetails == null){
+        if (savedInstanceState == null){
             places = new ArrayList<>();
             placesDetails = new ArrayList<>();
             setUpNetworkCalls();
             getResults();
         }else{
+            placesDetails = savedInstanceState.getParcelableArrayList(EXTRA_RESULT_LIST_DETAILS);
             setUpList();
         }
 
@@ -54,7 +56,6 @@ public class ResultListActivity extends BaseActivity implements OnListItemClickL
         super.onRestoreInstanceState(savedInstanceState);
         placesDetails = savedInstanceState.getParcelableArrayList(EXTRA_RESULT_LIST_DETAILS);
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -115,5 +116,15 @@ public class ResultListActivity extends BaseActivity implements OnListItemClickL
                 Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.error), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
