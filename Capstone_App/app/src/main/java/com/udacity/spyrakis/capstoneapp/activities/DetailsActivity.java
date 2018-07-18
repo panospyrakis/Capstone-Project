@@ -20,6 +20,7 @@ import com.udacity.spyrakis.capstoneapp.R;
 import com.udacity.spyrakis.capstoneapp.models.placeDetails.Description;
 import com.udacity.spyrakis.capstoneapp.models.placeDetails.PlaceDetails;
 import com.udacity.spyrakis.capstoneapp.provider.PlaceContract;
+import com.udacity.spyrakis.capstoneapp.widget.PlaceAppWidgetProvider;
 
 public class DetailsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -27,6 +28,8 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
     ImageView starOn;
     ImageView starOff;
     private static final int CURSOR_LOADER_ID = 0;
+    private static final int CURSOR_LOADER_ID_FROM_WIDGET = 1;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +38,17 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
 
         if (getIntent().hasExtra(ResultListActivity.EXTRA_ITEM_DETAILS)) {
             place = getIntent().getParcelableExtra(ResultListActivity.EXTRA_ITEM_DETAILS);
+            continueOnCreate();
+            checkIfFavourite();
+        } else if (getIntent().hasExtra(PlaceAppWidgetProvider.EXTRA_ITEM)) {
+            id = getIntent().getIntExtra(PlaceAppWidgetProvider.EXTRA_ITEM, 0);
+            getLoaderManager().initLoader(CURSOR_LOADER_ID_FROM_WIDGET, null, this);
         }
 
+
+    }
+
+    private void continueOnCreate() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle(place.getName());
         setSupportActionBar(toolbar);
@@ -51,11 +63,9 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
         Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(image);
         setUpFavouritesButton();
         setUpFabButton();
-        checkIfFavourite();
     }
 
     private void checkIfFavourite() {
-//      i'm doing this just to use a loader
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
     }
 
@@ -100,14 +110,22 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
 
     private void toggleStars() {
         if (starOff.getVisibility() == View.VISIBLE) {
-            starOff.setVisibility(View.INVISIBLE);
-            starOn.setVisibility(View.VISIBLE);
+            showStarOn();
             addItemInProvider();
         } else {
-            starOff.setVisibility(View.VISIBLE);
-            starOn.setVisibility(View.INVISIBLE);
+            showStarOff();
             removeItemFromProvider();
         }
+    }
+
+    private void showStarOff(){
+        starOff.setVisibility(View.VISIBLE);
+        starOn.setVisibility(View.INVISIBLE);
+    }
+
+    private void showStarOn(){
+        starOff.setVisibility(View.INVISIBLE);
+        starOn.setVisibility(View.VISIBLE);
     }
 
     private String getDescription() {
@@ -147,13 +165,15 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
         itemToAdd.put(PlaceContract.PlaceEntry.ICON, place.getIcon());
         getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, itemToAdd);
 
-//        RecipeAppWidgetProvider.sendRefreshBroadcast(getApplicationContext());
+        PlaceAppWidgetProvider.sendRefreshBroadcast(getApplicationContext());
     }
 
     private void removeItemFromProvider() {
         String where = PlaceContract.PlaceEntry.NAME + "=?";
         String[] whereVal = {place.getName()};
         getContentResolver().delete(PlaceContract.PlaceEntry.CONTENT_URI, where, whereVal);
+
+        PlaceAppWidgetProvider.sendRefreshBroadcast(getApplicationContext());
     }
 
     @Override
@@ -169,14 +189,42 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
 
     @Override
     public android.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String query = PlaceContract.PlaceEntry.NAME + "=?";
-        String[] queryName = {place.getName()};
-        return new CursorLoader(getApplicationContext(), PlaceContract.PlaceEntry.CONTENT_URI, null, query, queryName, null);
+
+        if (id == CURSOR_LOADER_ID) {
+            String query = PlaceContract.PlaceEntry.NAME + "=?";
+            String[] queryName = {place.getName()};
+            return new CursorLoader(getApplicationContext(), PlaceContract.PlaceEntry.CONTENT_URI, null, query, queryName, null);
+        } else {
+            String query = PlaceContract.PlaceEntry._ID + "=?";
+            String[] queryId = {this.id + ""};
+            return new CursorLoader(getApplicationContext(), PlaceContract.PlaceEntry.CONTENT_URI, null, query, queryId, null);
+        }
+
     }
 
     @Override
     public void onLoadFinished(android.content.Loader<Cursor> loader, Cursor cursor) {
-        if (cursor.getCount() > 0) toggleStars();
+        if (loader.getId() == CURSOR_LOADER_ID) {
+            if (cursor.getCount() > 0) showStarOn();
+        } else if (loader.getId() == CURSOR_LOADER_ID_FROM_WIDGET) {
+            if (cursor.getCount() <= 0) return;
+            cursor.moveToFirst();
+            place = new PlaceDetails();
+            int iconIndex = cursor.getColumnIndex(PlaceContract.PlaceEntry.ICON);
+            place.setIcon(cursor.getString(iconIndex));
+            int nameIndex = cursor.getColumnIndex(PlaceContract.PlaceEntry.NAME);
+            place.setName(cursor.getString(nameIndex));
+            int latIndex = cursor.getColumnIndex(PlaceContract.PlaceEntry.LAT);
+            place.setLat(cursor.getDouble(latIndex));
+            int lngIndex = cursor.getColumnIndex(PlaceContract.PlaceEntry.LONG);
+            place.setLng(cursor.getDouble(lngIndex));
+            int descIndex = cursor.getColumnIndex(PlaceContract.PlaceEntry.DESCRIPTION);
+            Description description = new Description();
+            description.setEn(cursor.getString(descIndex));
+            place.setDescription(description);
+            continueOnCreate();
+            showStarOn();
+        }
     }
 
     @Override

@@ -17,6 +17,10 @@
     <string name="no_details">Unluckily no description is available</string>
     <string name="geo_uri">geo:%f,%f?q=(%s)</string>
     <string name="content_authority">com.udacity.spyrakis.capstoneapp.app</string>
+    <string name="appwidget_text">Title</string>
+    <string name="add_widget">Add widget</string>
+    <string name="empty_view_text">Recipe List is Empty</string>
+    <string name="widget_title">Favourites</string>
     <string-array name="categories">
         <item>Accommodation</item>
         <item>Attraction</item>
