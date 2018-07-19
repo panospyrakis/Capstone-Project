@@ -7,20 +7,22 @@
     <string name="what">What?</string>
     <string name="search_button_text">Search</string>
     <string name="connection_fail">Internet Connection Failure</string>
-    <string name="base_url">http://tour-pedia.org/</string>
-    <string name="radius">1500</string>
+    <string name="base_url" translatable="false">http://tour-pedia.org/</string>
+    <string name="radius" translatable="false">1500</string>
     <string name="loading">Loading…</string>
     <string name="wait">Please Wait…</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="error">Something went wrong…</string>
     <string name="no_details">Unluckily no description is available</string>
-    <string name="geo_uri">geo:%f,%f?q=(%s)</string>
-    <string name="content_authority">com.udacity.spyrakis.capstoneapp.app</string>
+    <string name="geo_uri" translatable="false">geo:%f,%f?q=(%s)</string>
+    <string name="content_authority" translatable="false">com.udacity.spyrakis.capstoneapp.app</string>
     <string name="appwidget_text">Title</string>
     <string name="add_widget">Add widget</string>
     <string name="empty_view_text">Recipe List is Empty</string>
     <string name="widget_title">Favourites</string>
+    <string name="star_on">Added To Favourites</string>
+    <string name="star_off">Removed From Favourites</string>
     <string-array name="categories">
         <item>Accommodation</item>
         <item>Attraction</item>

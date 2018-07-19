@@ -21,6 +21,7 @@ public class ResultsListAdapter extends RecyclerView.Adapter<ResultsListAdapter.
 
     private ArrayList<PlaceDetails> places;
     private OnListItemClickListener listener;
+
     public ResultsListAdapter(ArrayList<PlaceDetails> places, OnListItemClickListener listener) {
         this.places = places;
         this.listener = listener;
@@ -71,7 +72,9 @@ public class ResultsListAdapter extends RecyclerView.Adapter<ResultsListAdapter.
                     listener.onItemClick(position);
                 }
             });
-            Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(this.image);
+            if (place.getIcon().trim().length() != 0) {
+                Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(this.image);
+            }
         }
     }
 }

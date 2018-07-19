@@ -2,6 +2,7 @@ package com.udacity.spyrakis.capstoneapp.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -89,31 +90,7 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
         progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
         progress.show();
 
-        LatLngBounds bounds = toBounds(150.0);
-
-
-        Call<ArrayList<Place>> call = service.places(bounds.southwest.latitude,
-                bounds.northeast.latitude,
-                bounds.southwest.longitude,
-                bounds.northeast.longitude,
-                category.toLowerCase());
-
-        call.enqueue(new Callback<ArrayList<Place>>() {
-            @Override
-            public void onResponse(Call<ArrayList<Place>> call, Response<ArrayList<Place>> response) {
-                progress.dismiss();
-                ArrayList<Place> places = response.body();
-                Intent resultsIntent = new Intent(getActivity(), ResultListActivity.class);
-                resultsIntent.putParcelableArrayListExtra(EXTRA_RESULT_LIST, places);
-                getActivity().startActivity(resultsIntent);
-            }
-
-            @Override
-            public void onFailure(Call<ArrayList<Place>> call, Throwable t) {
-                progress.dismiss();
-                Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.error), Toast.LENGTH_SHORT).show();
-            }
-        });
+        new SearchPlace().execute("");
     }
 
     public LatLngBounds toBounds(double radiusInMeters) {
@@ -162,4 +139,37 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
+
+    private class SearchPlace extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            LatLngBounds bounds = toBounds(150.0);
+
+
+            Call<ArrayList<Place>> call = service.places(bounds.southwest.latitude,
+                    bounds.northeast.latitude,
+                    bounds.southwest.longitude,
+                    bounds.northeast.longitude,
+                    category.toLowerCase());
+
+            call.enqueue(new Callback<ArrayList<Place>>() {
+                @Override
+                public void onResponse(Call<ArrayList<Place>> call, Response<ArrayList<Place>> response) {
+                    progress.dismiss();
+                    ArrayList<Place> places = response.body();
+                    Intent resultsIntent = new Intent(getActivity(), ResultListActivity.class);
+                    resultsIntent.putParcelableArrayListExtra(EXTRA_RESULT_LIST, places);
+                    getActivity().startActivity(resultsIntent);
+                }
+
+                @Override
+                public void onFailure(Call<ArrayList<Place>> call, Throwable t) {
+                    progress.dismiss();
+                    Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.error), Toast.LENGTH_SHORT).show();
+                }
+            });
+            return "Done";
+        }
+    }
+
 }

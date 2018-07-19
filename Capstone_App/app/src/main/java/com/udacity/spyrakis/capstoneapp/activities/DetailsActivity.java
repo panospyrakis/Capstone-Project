@@ -60,7 +60,9 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
         description.setText(getDescription());
 
         ImageView image = findViewById(R.id.image);
-        Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(image);
+        if (place.getIcon().trim().length() != 0) {
+            Picasso.get().load(place.getIcon()).placeholder(R.drawable.placeholder).into(image);
+        }
         setUpFavouritesButton();
         setUpFabButton();
     }
@@ -118,12 +120,12 @@ public class DetailsActivity extends BaseActivity implements LoaderManager.Loade
         }
     }
 
-    private void showStarOff(){
+    private void showStarOff() {
         starOff.setVisibility(View.VISIBLE);
         starOn.setVisibility(View.INVISIBLE);
     }
 
-    private void showStarOn(){
+    private void showStarOn() {
         starOff.setVisibility(View.INVISIBLE);
         starOn.setVisibility(View.VISIBLE);
     }
