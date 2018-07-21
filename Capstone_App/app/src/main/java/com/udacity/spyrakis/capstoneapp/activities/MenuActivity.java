@@ -30,6 +30,9 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
 
     static final String EXTRA_LOCATION = "EXTRA_LOCATION";
     static final String EXTRA_RESULT_LIST = "EXTRA_RESULT_LIST";
+    static int FIREBASE_ID = 1;
+    static final String FIREBASE_CONTENT = "EXECUTED_SEARCH";
+    static final String FIREBASE_NAME = "FIREBASE_NAME";
 
     Button whereButton;
     Button searchButton;
@@ -91,6 +94,8 @@ public class MenuActivity extends BaseActivity implements AdapterView.OnItemSele
         progress.show();
 
         new SearchPlace().execute("");
+        logToFirebase(FIREBASE_ID,FIREBASE_NAME,FIREBASE_CONTENT);
+        FIREBASE_ID++;
     }
 
     public LatLngBounds toBounds(double radiusInMeters) {
